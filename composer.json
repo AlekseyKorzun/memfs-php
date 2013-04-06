@@ -1,0 +1,25 @@
+{
+	"name": "alekseykorzun/memfs-php5",
+	"type": "filesystem",
+	"description": "",
+	"keywords": ["php", "php5", "memcache", "memcached", "cache", "storage", "performance", "scalability", "caching", "optimization", "profile", "filesystem", "loading", "include", "fast", "memfs"],
+	"homepage": "https://github.com/AlekseyKorzun/MemFS-PHP5",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Aleksey Korzun",
+			"email": "al.ko@webfoundation.net",
+			"homepage": "http://www.alekseykorzun.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+        "alekseykorzun/memcached-wrapper-php5": "0.2.*@dev"
+	},
+	"autoload": {
+		"psr-0": {
+			"MemFS": "src/"
+		}
+	}
+}
