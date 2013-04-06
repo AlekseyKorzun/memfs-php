@@ -35,7 +35,7 @@ class Benchmarker
      *
      * @var int
      */
-    const FILES = 500;
+    const FILES = 100;
 
     /**
      * Extension suffix for include based files
@@ -50,6 +50,13 @@ class Benchmarker
      * @var string
      */
     const EXT_MEMFS = 'memfs';
+
+    /**
+     * Extension suffix for MemFS multi based files
+     *
+     * @var string
+     */
+    const EXT_MEMFSM = 'memfsm';
 
     /**
      * Stores copy of servers to use for Memcached
@@ -88,6 +95,9 @@ class Benchmarker
 
         // Perform MemFS benchmark
         $this->doMemFS();
+
+        // Perform MemFS multi benchmark
+        $this->doMemFSMulti();
     }
 
     /**
@@ -107,6 +117,10 @@ class Benchmarker
             file_put_contents(
                 self::directory() . $number . '.' . self::EXT_MEMFS . '.php',
                 str_replace('__FILE__', $number . self::EXT_MEMFS, self::source())
+            );
+            file_put_contents(
+                self::directory() . $number . '.' . self::EXT_MEMFSM . '.php',
+                str_replace('__FILE__', $number . self::EXT_MEMFSM, self::source())
             );
         }
     }
@@ -151,13 +165,42 @@ class Benchmarker
     }
 
     /**
+     * Perform MemFS based test with 5 file inclusion at once
+     */
+    protected function doMemFSMulti()
+    {
+        $file = new File('memfs', $this->servers);
+
+        $start = microtime(true);
+
+        $count = 1;
+
+        while ($count < self::FILES) {
+            $files = array();
+
+            while (count($files) < 10) {
+                $files[] = self::directory() . $count . '.' . self::EXT_MEMFSM . '.php';
+                ++$count;
+            }
+
+            $file->load($files);
+        }
+
+        $end = microtime(true);
+
+        $time = $end - $start;
+
+        echo "Loaded " . self::FILES . " files for using MemFS (10 files at the time) " . $time . "\n";
+    }
+
+    /**
      * Get testing range (number of files)
      *
      * @return int[]
      */
     protected static function range()
     {
-        return range(0, self::FILES);
+        return range(1, self::FILES);
     }
 
     /**

@@ -53,67 +53,124 @@ class File
     /**
      * Load a file, functions like include() or require()
      *
-     * @throws Exception
-     * @param string $filename path or uri
+     * @param string|string[] $filename path or uri
      * @param bool $isRequired if file is required but could not be accessed exception will be thrown
      */
     public function load($filename, $isRequired = false)
     {
-        // Initialize variable
-        $resource = false;
+        $keys = array();
 
-        $key = md5($filename);
-        if (!$this->cache->get($key, $resource)) {
-            // If we detect an URI, encode filename
-            if (strpos($filename, 'http') === 0) {
-                $filename = urlencode($filename);
-            }
-
-            $resource = file_get_contents($filename);
-            if (!$resource && $isRequired) {
-                throw new Exception('We are unable to load required resource: ' . $filename);
-            }
-
-            // Make sure opening tag is there
-            if (strpos($resource, '<?') === false) {
-                throw new Exception('Requested resource must have opening tags: ' . $filename);
-            }
-            // Append closing tag
-            $position = strrpos($resource, '?>');
-            if ($position === false || trim(substr($resource, $position + 2, strlen($resource))) != '') {
-                $resource .= "\n?>\n";
-            }
-
-            $this->cache->set(
-                $key,
-                $resource
-            );
+        // Convert regular strings into an array
+        $filenames = (array)$filename;
+        foreach ($filenames as $filename) {
+            $keys[md5($filename)] = $filename;
         }
 
-        if ($resource) {
-            eval('?>' . $resource . '<?');
+        // Initialize resource array
+        $resources = array();
+
+        // Retrieve resources from cache
+        if (!$this->cache->get(array_keys($keys), $resources)) {
+            $resources = $this->save($keys, $isRequired);
         }
+
+        // If did not get all of the resources back from cache
+        // cache resources that we were missing
+        if (count($resources) != count($keys)) {
+            $saved = $this->save(array_diff_key($keys, $resources), $isRequired);
+            $resources = array_merge($resources, $saved);
+        }
+
+        if ($resources) {
+            foreach ($resources as $resource) {
+                eval('?>' . $resource . '<?');
+            }
+        }
+    }
+
+    /**
+     * Save resources in cache
+     *
+     * @throws \Exception
+     * @param string[] $keys
+     * @param bool $isRequired
+     * @return string[]
+     */
+    protected function save(array $keys, $isRequired)
+    {
+        $resources = array();
+
+        if ($keys) {
+            foreach ($keys as $key => $filename) {
+                // If we detect an URI, encode filename
+                if (strpos($filename, 'http') === 0) {
+                    $filename = urlencode($filename);
+                }
+
+                $resource = file_get_contents($filename);
+                if (!$resource && $isRequired) {
+                    throw new Exception('We are unable to load required resource: ' . $filename);
+                }
+
+                // Make sure opening tag is there
+                if (strpos($resource, '<?') === false) {
+                    throw new Exception('Requested resource must have opening tags: ' . $filename);
+                }
+
+                // Append closing tag
+                $position = strrpos($resource, '?>');
+                if ($position === false || trim(substr($resource, $position + 2, strlen($resource))) != '') {
+                    $resource .= "\n?>\n";
+                }
+
+
+                $this->cache->set(
+                    $key,
+                    $resource
+                );
+
+                $resources[$key] = $resource;
+            }
+        }
+
+        return $resources;
     }
 
     /**
      * Only load file if it was not previously loaded, functions likee
      * include_once() or require_once()
      *
-     * @param string $filename path or uri
+     * @param string|string[] $filename path or uri
      * @param bool $isRequired if file is required but could not be accessed exception will be thrown
      */
     public function once($filename, $isRequired = false)
     {
         $key = md5($filename);
         if (!$this->cache->isStored($key)) {
-            $this->load($filename);
+            $this->load($filename, $isRequired);
+        }
+    }
+
+    /**
+     * Flush one file
+     *
+     * @param string|string[] $filename
+     */
+    public function flush($filename)
+    {
+        if (is_array($filename)) {
+            foreach ($filename as $file) {
+                $this->flush($file);
+            }
+        } else {
+            $this->cache->delete(md5($filename));
         }
     }
 
     /**
      * Flush all cached resources
      */
-    public function flush()
+    public function flushAll()
     {
         $this->cache->flush();
     }
