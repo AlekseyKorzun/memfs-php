@@ -1,9 +1,9 @@
 {
-	"name": "alekseykorzun/memfs-php5",
+	"name": "alekseykorzun/memfs-php",
 	"type": "filesystem",
 	"description": "",
 	"keywords": ["php", "php5", "memcache", "memcached", "cache", "storage", "performance", "scalability", "caching", "optimization", "profile", "filesystem", "loading", "include", "fast", "memfs"],
-	"homepage": "https://github.com/AlekseyKorzun/MemFS-PHP5",
+	"homepage": "https://github.com/AlekseyKorzun/memfs-php",
 	"license": "MIT",
 	"authors": [
 		{

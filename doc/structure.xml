@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project version="2.0.0a13" title="">
+  <file path="File.php" hash="afd5ee5b434b8eb17393ccd3eba96b35" package="Default">
+    <class final="false" abstract="false" namespace="MemFS" line="21" package="MemFS">
+      <extends/>
+      <name>File</name>
+      <full_name>\MemFS\File</full_name>
+      <docblock line="7">
+        <description>MemFS class that caches and looks up requested files within Memcached pool</description>
+        <long-description>&lt;p&gt;If you are not using composer, you must download and set-up:
+https://github.com/AlekseyKorzun/Memcached-Wrapper-PHP-5&lt;/p&gt;</long-description>
+        <tag line="7" name="package" description="MemFS"/>
+        <tag line="7" name="see" description="\MemFS\http://pecl.php.net/package/memcached" refers="\MemFS\http://pecl.php.net/package/memcached"/>
+        <tag line="7" name="author" description="Aleksey Korzun &lt;al.ko@webfoundation.net&gt;"/>
+        <tag line="7" name="version" description="0.1"/>
+        <tag line="7" name="license" description="MIT"/>
+        <tag line="7" name="link" description="http://www.webfoundation.net" link="http://www.webfoundation.net"/>
+        <tag line="7" name="link" description="http://www.alekseykorzun.com" link="http://www.alekseykorzun.com"/>
+      </docblock>
+      <property final="false" static="false" visibility="protected" line="29" namespace="MemFS" package="Default">
+        <name>$cache</name>
+        <default></default>
+        <docblock line="23">
+          <description>Instance of Memcached wrapper</description>
+          <long-description></long-description>
+          <tag line="23" name="see" description="\MemFS\https://github.com/AlekseyKorzun/Memcached-Wrapper-PHP-5" refers="\MemFS\https://github.com/AlekseyKorzun/Memcached-Wrapper-PHP-5"/>
+          <tag line="23" name="var" description="" type="\Memcached\Wrapper">
+            <type by_reference="false">\Memcached\Wrapper</type>
+          </tag>
+        </docblock>
+      </property>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="MemFS" line="48" package="MemFS">
+        <name>__construct</name>
+        <full_name>__construct</full_name>
+        <docblock line="31">
+          <description>Activates MemFS</description>
+          <long-description></long-description>
+          <tag line="31" name="param" description="name of a pool MemFs should use via Memcached" type="string" variable="$pool">
+            <type by_reference="false">string</type>
+          </tag>
+          <tag line="31" name="param" description="a list of Memcached servers we will be using, each entry&#10;in servers is supposed to be an array containing hostname, port, and&#10;optionally, weight of the server&#10;Example:&#10; $servers = array(&#10;       array('mem1.domain.com', 11211, 33),&#10;       array('mem2.domain.com', 11211, 67)&#10; );&#10;See: http://www.php.net/manual/en/memcached.addservers.php" type="mixed[]" variable="$servers">
+            <type by_reference="false">mixed[]</type>
+          </tag>
+        </docblock>
+        <argument line="48">
+          <name>$pool</name>
+          <default>null</default>
+          <type/>
+        </argument>
+        <argument line="48">
+          <name>$servers</name>
+          <default>null</default>
+          <type>array</type>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="MemFS" line="59" package="MemFS">
+        <name>load</name>
+        <full_name>load</full_name>
+        <docblock line="53">
+          <description>Load a file, functions like include() or require()</description>
+          <long-description></long-description>
+          <tag line="53" name="param" description="path or uri" type="string|string[]" variable="$filename">
+            <type by_reference="false">string</type>
+            <type by_reference="false">string[]</type>
+          </tag>
+          <tag line="53" name="param" description="if file is required but could not be accessed exception will be thrown" type="bool" variable="$isRequired">
+            <type by_reference="false">bool</type>
+          </tag>
+        </docblock>
+        <argument line="59">
+          <name>$filename</name>
+          <default></default>
+          <type/>
+        </argument>
+        <argument line="59">
+          <name>$isRequired</name>
+          <default>false</default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="protected" namespace="MemFS" line="99" package="MemFS">
+        <name>save</name>
+        <full_name>save</full_name>
+        <docblock line="91">
+          <description>Save resources in cache</description>
+          <long-description></long-description>
+          <tag line="91" name="throws" description="" type="\Exception">
+            <type by_reference="false">\Exception</type>
+          </tag>
+          <tag line="91" name="param" description="" type="string[]" variable="$keys">
+            <type by_reference="false">string[]</type>
+          </tag>
+          <tag line="91" name="param" description="" type="bool" variable="$isRequired">
+            <type by_reference="false">bool</type>
+          </tag>
+          <tag line="91" name="return" description="" type="string[]">
+            <type by_reference="false">string[]</type>
+          </tag>
+        </docblock>
+        <argument line="99">
+          <name>$keys</name>
+          <default></default>
+          <type>array</type>
+        </argument>
+        <argument line="99">
+          <name>$isRequired</name>
+          <default></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="MemFS" line="146" package="MemFS">
+        <name>once</name>
+        <full_name>once</full_name>
+        <docblock line="139">
+          <description>Only load file if it was not previously loaded, functions likee
+include_once() or require_once()</description>
+          <long-description></long-description>
+          <tag line="139" name="param" description="path or uri" type="string|string[]" variable="$filename">
+            <type by_reference="false">string</type>
+            <type by_reference="false">string[]</type>
+          </tag>
+          <tag line="139" name="param" description="if file is required but could not be accessed exception will be thrown" type="bool" variable="$isRequired">
+            <type by_reference="false">bool</type>
+          </tag>
+        </docblock>
+        <argument line="146">
+          <name>$filename</name>
+          <default></default>
+          <type/>
+        </argument>
+        <argument line="146">
+          <name>$isRequired</name>
+          <default>false</default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="MemFS" line="159" package="MemFS">
+        <name>flush</name>
+        <full_name>flush</full_name>
+        <docblock line="154">
+          <description>Flush one file</description>
+          <long-description></long-description>
+          <tag line="154" name="param" description="" type="string|string[]" variable="$filename">
+            <type by_reference="false">string</type>
+            <type by_reference="false">string[]</type>
+          </tag>
+        </docblock>
+        <argument line="159">
+          <name>$filename</name>
+          <default></default>
+          <type/>
+        </argument>
+      </method>
+      <method final="false" abstract="false" static="false" visibility="public" namespace="MemFS" line="173" package="MemFS">
+        <name>flushAll</name>
+        <full_name>flushAll</full_name>
+        <docblock line="170">
+          <description>Flush all cached resources</description>
+          <long-description></long-description>
+        </docblock>
+      </method>
+    </class>
+    <parse_markers>
+      <error line="0" code="50007">No page-level DocBlock was found in file File.php</error>
+    </parse_markers>
+  </file>
+  <package name="Default" full_name="Default"/>
+  <package name="MemFS" full_name="MemFS"/>
+  <namespace name="MemFS" full_name="MemFS"/>
+  <marker count="0">todo</marker>
+  <marker count="0">fixme</marker>
+  <deprecated count="0"/>
+</project>
