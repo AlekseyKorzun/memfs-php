@@ -1,4 +1,4 @@
-memfs-php
+MemFS-PHP
 ===========
 
 This package provides a way to store your application files in Memcached pool with automatic
