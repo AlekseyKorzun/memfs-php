@@ -15,7 +15,7 @@
 	],
 	"require": {
 		"php": ">=5.3.0",
-        "alekseykorzun/memcached-wrapper-php5": "0.2.*@dev"
+        "alekseykorzun/memcached-wrapper-php": "0.2.*@dev"
 	},
 	"autoload": {
 		"psr-0": {

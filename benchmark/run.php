@@ -35,35 +35,14 @@ class Benchmarker
      *
      * @var int
      */
-    const FILES = 100;
+    const FILES = 500;
 
     /**
-     * Extension suffix for include based files
+     * Stores an instance of MemFS
      *
-     * @var string
+     * @var File
      */
-    const EXT_INCLUDE = 'include';
-
-    /**
-     * Extension suffix for MemFS based files
-     *
-     * @var string
-     */
-    const EXT_MEMFS = 'memfs';
-
-    /**
-     * Extension suffix for MemFS multi based files
-     *
-     * @var string
-     */
-    const EXT_MEMFSM = 'memfsm';
-
-    /**
-     * Stores copy of servers to use for Memcached
-     *
-     * @var string[]
-     */
-    protected $servers;
+    protected $memfs;
 
     /**
      * Directory where we store test files
@@ -79,7 +58,7 @@ class Benchmarker
      */
     public function __construct(array $servers)
     {
-        $this->servers = $servers;
+        $this->memfs = new File('memfs', $servers);
     }
 
     /**
@@ -96,8 +75,10 @@ class Benchmarker
         // Perform MemFS benchmark
         $this->doMemFS();
 
-        // Perform MemFS multi benchmark
-        $this->doMemFSMulti();
+        // Perform MemFS multi benchmarks
+        $this->doMemFSMulti(10);
+        $this->doMemFSMulti(250);
+        $this->doMemFSMulti(500);
     }
 
     /**
@@ -111,16 +92,8 @@ class Benchmarker
         // Create dummy files
         foreach (self::range() as $number) {
             file_put_contents(
-                self::directory() . $number . '.' . self::EXT_INCLUDE . '.php',
-                str_replace('__FILE__', $number . self::EXT_INCLUDE, self::source())
-            );
-            file_put_contents(
-                self::directory() . $number . '.' . self::EXT_MEMFS . '.php',
-                str_replace('__FILE__', $number . self::EXT_MEMFS, self::source())
-            );
-            file_put_contents(
-                self::directory() . $number . '.' . self::EXT_MEMFSM . '.php',
-                str_replace('__FILE__', $number . self::EXT_MEMFSM, self::source())
+                self::directory() . $number . '.php',
+                self::source()
             );
         }
     }
@@ -134,7 +107,7 @@ class Benchmarker
         $start = microtime(true);
 
         foreach (self::range() as $number) {
-            include(self::directory() . $number . '.' . self::EXT_INCLUDE . '.php');
+            include(self::directory() . $number . '.php');
         }
 
         $end = microtime(true);
@@ -149,12 +122,10 @@ class Benchmarker
      */
     protected function doMemFS()
     {
-        $file = new File('memfs', $this->servers);
-
         $start = microtime(true);
 
         foreach (self::range() as $number) {
-            $file->load(self::directory() . $number . '.' . self::EXT_MEMFS . '.php');
+            $this->memfs->load(self::directory() . $number . '.php');
         }
 
         $end = microtime(true);
@@ -166,11 +137,11 @@ class Benchmarker
 
     /**
      * Perform MemFS based test with 5 file inclusion at once
+     *
+     * @param int $pack number of files to request at once
      */
-    protected function doMemFSMulti()
+    protected function doMemFSMulti($pack = 10)
     {
-        $file = new File('memfs', $this->servers);
-
         $start = microtime(true);
 
         $count = 1;
@@ -178,19 +149,19 @@ class Benchmarker
         while ($count < self::FILES) {
             $files = array();
 
-            while (count($files) < 10) {
-                $files[] = self::directory() . $count . '.' . self::EXT_MEMFSM . '.php';
+            while (count($files) < (int) $pack) {
+                $files[] = self::directory() . $count . '.php';
                 ++$count;
             }
 
-            $file->load($files);
+            $this->memfs->load($files);
         }
 
         $end = microtime(true);
 
         $time = $end - $start;
 
-        echo "Loaded " . self::FILES . " files for using MemFS (10 files at the time) " . $time . "\n";
+        echo "Loaded " . self::FILES . " files for using MemFS (" . $pack . " files at the time) " . $time . "\n";
     }
 
     /**
@@ -210,7 +181,7 @@ class Benchmarker
      */
     protected static function source()
     {
-        return "<?php class Test__FILE__ {public function __constructor() {}}?>";
+        return "<?php ?>";
     }
 
     /**
@@ -252,6 +223,10 @@ class Benchmarker
     public function __destruct()
     {
         $this->clean();
+
+        echo "###################\n" .
+             "Please make sure you run this benchmark twice to insure files are cached in Memcache\n" .
+             "###################\n";
     }
 }
 
