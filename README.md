@@ -13,11 +13,13 @@ Performance
 
 First let's look at benchmarks running in VirtualBox on MacBook Pro:
 
+```bash
 Loaded 500 files using regular include() in 0.020308017730713
 Loaded 500 files using MemFS in 0.15591597557068
 Loaded 500 files using MemFS (10 files at the time) 0.018874883651733
 Loaded 500 files using MemFS (250 files at the time) 0.015585899353027
 Loaded 500 files using MemFS (500 files at the time) 0.016402959823608
+```
 
 Keep in mind that the laptop in question has SSD drive. 
 
