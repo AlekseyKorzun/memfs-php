@@ -61,7 +61,6 @@ You can benchmark and gauge how much benefit this optimization might bring you b
 
 ```php
 php benchmark/run.php
-
 ```
 
 make sure to run it twice before reading the results so the application can cache files
