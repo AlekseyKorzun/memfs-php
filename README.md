@@ -68,4 +68,4 @@ make sure to run it twice before reading the results so the application can cach
 
 Bugs & Feedback
 ===========
-Feel free to reach me via e-mail al.ko@webfoundation.net
+Feel free to reach me via e-mail aleksey@webfoundation.net
